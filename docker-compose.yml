@@ -1,0 +1,40 @@
+﻿services:
+  online_shop_api:
+    image: tajievolimjon/online_shop_api
+    container_name: online_shop_api
+    build:
+      context: .
+      dockerfile: WebApi/Dockerfile
+    ports:
+      - "8007:80"
+    depends_on:
+      - online_shop_db
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_URLS=http://+:80
+    volumes:
+      - online-shop:/app/wwwroot/images
+    networks:
+      - postgres-network
+
+  online_shop_db:
+    image: postgres
+    container_name: online_shop_db
+    restart: always
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=st2025dodoPtech
+    ports:
+      - "5407:5432"
+    volumes:
+      - postgresql-data:/var/lib/postgresql/data
+    networks:
+      - postgres-network
+
+networks:
+  postgres-network:
+    driver: bridge
+
+volumes:
+  postgresql-data:
+  online-shop:
