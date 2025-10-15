@@ -45,7 +45,7 @@ public class ColorController(IColorService service) : BaseController
         return StatusCode(response.StatusCode, response);
     }
 
-    [HttpPut("update-color"), AllowAnonymous]
+    [HttpPut("update-color")]
     [Authorize(Roles = "Admin, SuperAdmin")]
     public async Task<IActionResult> UpdateColor(UpdateColorDto updateColor)
     {

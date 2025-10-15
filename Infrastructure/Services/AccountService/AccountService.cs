@@ -28,19 +28,23 @@ public class AccountService(
                 Email = model.Email.ToLower().Trim(),
                 PhoneNumber = model.PhoneNumber.Trim()
             };
+
             await userManager.CreateAsync(user, model.Password);
             await userManager.AddToRoleAsync(user, DefaultRoleConst.User);
+
             var userProfile = new UserProfile()
             {
                 ApplicationUserId = user.Id,
                 FirstName = "",
                 LastName = "",
-                Email = "",
-                PhoneNumber = "",
+                Email = model.Email.ToLower().Trim(),
+                PhoneNumber = model.PhoneNumber.Trim(),
                 Image = ""
             };
+
             await context.UserProfiles.AddAsync(userProfile);
             await context.SaveChangesAsync();
+
             return new Response<string>("Registered successfully.");
         }
         catch (Exception e)
@@ -56,6 +60,7 @@ public class AccountService(
             var user = await userManager.FindByNameAsync(model.UserName.ToLower().Trim());
             if (user == null)
                 return new Response<string>(HttpStatusCode.BadRequest, "Your UserName or Password is incorrect!!!");
+
             var check = await userManager.CheckPasswordAsync(user, model.Password);
             return check
                 ? new Response<string>(await GenerateJwtToken(user))
@@ -70,6 +75,7 @@ public class AccountService(
     private async Task<string> GenerateJwtToken(ApplicationUser applicationUser)
     {
         var userProfile = await context.UserProfiles.FindAsync(applicationUser.Id);
+
         var key = Encoding.UTF8.GetBytes(configuration["Jwt:Key"]!);
         var securityKey = new SymmetricSecurityKey(key);
         var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
